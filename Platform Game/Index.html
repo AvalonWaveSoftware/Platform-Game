@@ -3,38 +3,40 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Standalone Platformer</title>
+  <title>Avalon Standalone Game</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div id="app">
-    <aside id="ui">
-      <h1>Standalone Platformer</h1>
+    <header id="topbar">
+      <div>
+        <h1>Avalon Standalone Game</h1>
+        <p>Reach the goal on the final level to win.</p>
+      </div>
 
-      <div class="panel">
-        <div><strong>Level:</strong> <span id="levelName">-</span></div>
-        <div><strong>Level Number:</strong> <span id="levelNumber">-</span></div>
-        <div><strong>Coins Left:</strong> <span id="coinCount">0</span></div>
+      <div id="hud">
+        <div><strong>Level:</strong> <span id="levelLabel">1 / 1</span></div>
+        <div><strong>Coins left:</strong> <span id="coinCount">0</span></div>
+        <div><strong>Time:</strong> <span id="timerLabel">00:00.000</span></div>
         <div><strong>Status:</strong> <span id="statusText">Ready</span></div>
       </div>
-
-      <div class="panel">
-        <h2>Controls</h2>
-        <ul>
-          <li>Move with Arrow Keys or WASD</li>
-          <li>Jump with Space, W, or Arrow Up</li>
-          <li>Press R to restart the current level</li>
-        </ul>
-      </div>
-    </aside>
+    </header>
 
     <main id="game-shell">
       <canvas id="game" width="960" height="540"></canvas>
     </main>
+
+    <footer id="controls">
+      <p>
+        Move with <strong>WASD</strong> or <strong>Arrow Keys</strong>. 
+        Jump with <strong>Space</strong>, <strong>W</strong>, or <strong>Up Arrow</strong>.
+        Timer starts when you first move.
+      </p>
+    </footer>
   </div>
 
   <script src="engine.js"></script>
-  <script src="data/campaign.js"></script>
+  <script src="levels.js"></script>
   <script src="game.js"></script>
 </body>
 </html>

@@ -9,6 +9,7 @@
   --text: #ecf1ff;
   --muted: #aeb8d8;
   --accent: #6ea8fe;
+  --good: #4ade80;
 }
 
 html,
@@ -25,47 +26,48 @@ body {
 }
 
 #app {
-  display: grid;
-  grid-template-columns: 300px 1fr;
-  gap: 16px;
-  align-items: start;
+  max-width: 1240px;
+  margin: 0 auto;
 }
 
-#ui {
+#topbar {
+  display: grid;
+  grid-template-columns: 1fr 420px;
+  gap: 16px;
+  align-items: stretch;
+  margin-bottom: 16px;
+}
+
+#topbar > div,
+#hud,
+#controls {
   background: rgba(21, 28, 49, 0.96);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 16px;
   padding: 16px;
-  position: sticky;
-  top: 16px;
 }
 
-#ui h1,
-#ui h2 {
-  margin-top: 0;
+h1 {
+  margin: 0 0 8px;
+  font-size: 1.8rem;
 }
 
-#ui h1 {
-  font-size: 1.5rem;
-  margin-bottom: 10px;
+p {
+  color: var(--muted);
+  line-height: 1.45;
+  margin: 0;
 }
 
-#ui h2 {
-  font-size: 1rem;
-  margin-bottom: 10px;
-}
-
-.panel {
-  background: var(--panel-2);
-  border-radius: 12px;
-  padding: 12px;
-  margin-top: 12px;
+#hud {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 16px;
+  align-content: center;
 }
 
 #game-shell {
   display: flex;
   justify-content: center;
-  align-items: start;
 }
 
 #game {
@@ -78,16 +80,16 @@ body {
   image-rendering: pixelated;
 }
 
-ul {
-  padding-left: 18px;
+#controls {
+  margin-top: 16px;
 }
 
-@media (max-width: 1024px) {
-  #app {
+@media (max-width: 900px) {
+  #topbar {
     grid-template-columns: 1fr;
   }
 
-  #ui {
-    position: static;
+  #hud {
+    grid-template-columns: 1fr;
   }
 }

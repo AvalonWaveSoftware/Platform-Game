@@ -18,10 +18,6 @@
     static uid() {
       return Math.random().toString(36).slice(2, 10);
     }
-
-    static deepClone(value) {
-      return JSON.parse(JSON.stringify(value));
-    }
   }
 
   class InputManager {
@@ -29,19 +25,20 @@
       this.keysDown = new Set();
       this.keysPressed = new Set();
 
-      window.addEventListener("keydown", (e) => {
-        if (!this.keysDown.has(e.key)) {
-          this.keysPressed.add(e.key);
+      window.addEventListener("keydown", (event) => {
+        if (["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", " "].includes(event.key)) {
+          event.preventDefault();
         }
-        this.keysDown.add(e.key);
+
+        if (!this.keysDown.has(event.key)) {
+          this.keysPressed.add(event.key);
+        }
+
+        this.keysDown.add(event.key);
       });
 
-      window.addEventListener("keyup", (e) => {
-        this.keysDown.delete(e.key);
-      });
-
-      canvas.addEventListener("mousedown", () => {
-        canvas.focus();
+      window.addEventListener("keyup", (event) => {
+        this.keysDown.delete(event.key);
       });
     }
 
@@ -117,17 +114,15 @@
       this.data = props.data || {};
       this.start = props.start || function () {};
       this.update = props.update || function () {};
-      this.draw =
-        props.draw ||
-        function (ctx, camera) {
-          ctx.fillStyle = this.color;
-          ctx.fillRect(
-            Math.round(this.x - camera.x),
-            Math.round(this.y - camera.y),
-            this.width,
-            this.height
-          );
-        };
+      this.draw = props.draw || function (ctx, camera) {
+        ctx.fillStyle = this.color;
+        ctx.fillRect(
+          Math.round(this.x - camera.x),
+          Math.round(this.y - camera.y),
+          this.width,
+          this.height
+        );
+      };
       this.onCollision = props.onCollision || function () {};
     }
 
@@ -142,8 +137,8 @@
       this.engine = null;
       this.entities = [];
       this.background = config.background || "#0f172a";
-      this.worldWidth = config.worldWidth || 3000;
-      this.worldHeight = config.worldHeight || 1500;
+      this.worldWidth = config.worldWidth || 3200;
+      this.worldHeight = config.worldHeight || 1600;
       this.onEnter = config.onEnter || function () {};
       this.onExit = config.onExit || function () {};
       this.update = config.update || function () {};
@@ -159,8 +154,16 @@
       return entity;
     }
 
+    clear() {
+      this.entities.length = 0;
+    }
+
     removeDestroyed() {
       this.entities = this.entities.filter((entity) => !entity.remove);
+    }
+
+    getByName(name) {
+      return this.entities.find((entity) => entity.name === name);
     }
 
     getByTag(tag) {
@@ -213,6 +216,8 @@
     }
 
     findSolidCollisions(entity) {
+      if (!this.currentScene) return [];
+
       return this.currentScene.entities.filter((other) => {
         return other !== entity && other.solid && Utils.rectsOverlap(entity, other);
       });
@@ -222,26 +227,30 @@
       entity.onGround = false;
 
       entity.x += entity.vx * dt;
-      const hitX = this.findSolidCollisions(entity);
-      for (const other of hitX) {
+      const hitsX = this.findSolidCollisions(entity);
+
+      for (const other of hitsX) {
         if (entity.vx > 0) {
           entity.x = other.x - entity.width;
         } else if (entity.vx < 0) {
           entity.x = other.x + other.width;
         }
+
         entity.vx = 0;
         entity.onCollision(other, "x");
       }
 
       entity.y += entity.vy * dt;
-      const hitY = this.findSolidCollisions(entity);
-      for (const other of hitY) {
+      const hitsY = this.findSolidCollisions(entity);
+
+      for (const other of hitsY) {
         if (entity.vy > 0) {
           entity.y = other.y - entity.height;
           entity.onGround = true;
         } else if (entity.vy < 0) {
           entity.y = other.y + other.height;
         }
+
         entity.vy = 0;
         entity.onCollision(other, "y");
       }
@@ -302,6 +311,7 @@
       this.currentScene.draw(this, ctx);
 
       const entities = [...this.currentScene.entities].sort((a, b) => a.z - b.z);
+
       for (const entity of entities) {
         if (!entity.visible) continue;
         entity.draw(ctx, this.camera, this);
@@ -312,6 +322,7 @@
 
     loop = (timestamp) => {
       if (!this.lastTime) this.lastTime = timestamp;
+
       let dt = (timestamp - this.lastTime) / 1000;
       this.lastTime = timestamp;
       dt = Math.min(dt, 0.033);
@@ -335,6 +346,7 @@
       if (!canvas) {
         throw new Error(`Canvas with id "${canvasId}" not found.`);
       }
+
       return new EngineCore(canvas);
     },
     Utils,
